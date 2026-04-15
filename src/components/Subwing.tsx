@@ -15,13 +15,16 @@ interface Props {
  */
 export function Subwing({ subwing, palette, onEnterRoom }: Props) {
   const rooms: Room[] = ROOMS.filter((r) => r.subwing === subwing.id);
+  // 4-room 2x2 grids are vertically crowded — use smaller cards so
+  // the subtitle under the bottom row still fits in the viewport.
+  const cardSize = rooms.length >= 4 ? 120 : 130;
   return (
     <>
       {rooms.map((r, idx) => (
         <FloatingNode
           key={r.id}
           pos={r.pos}
-          size={130}
+          size={cardSize}
           rotate={0}
           depth={0.8}
           visible

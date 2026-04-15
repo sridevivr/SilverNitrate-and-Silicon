@@ -65,23 +65,27 @@ export function exhibitGrid(n: number): CanvasPos[] {
 
 /**
  * Position descendants in a radial constellation around a hub point.
- * Angles start at -90° (due north) and advance clockwise.
+ * Angles start at `startAngle` (degrees) and advance clockwise.
  *
- * @param hub    center of the constellation, in canvas percent
- * @param count  number of satellites
- * @param radiusX  horizontal radius in viewport-width percent
- * @param radiusY  vertical radius in viewport-height percent
+ * @param hub         center of the constellation, in canvas percent
+ * @param count       number of satellites
+ * @param radiusX     horizontal radius in viewport-width percent
+ * @param radiusY     vertical radius in viewport-height percent
+ * @param startAngle  angle of the first satellite in degrees (0 = east,
+ *                    90 = south, -90/270 = north). Defaults to "south"
+ *                    so no satellite lands directly above the hub, which
+ *                    would make its text label collide with the hub card.
  */
 export function descendantConstellation(
   hub: CanvasPos,
   count: number,
   radiusX = 22,
   radiusY = 24,
+  startAngle = 90,
 ): CanvasPos[] {
   const cx = parseFloat(hub.left);
   const cy = parseFloat(hub.top);
   const positions: CanvasPos[] = [];
-  const startAngle = -90;
   const step = count > 0 ? 360 / count : 0;
   for (let i = 0; i < count; i++) {
     const angleRad = ((startAngle + i * step) * Math.PI) / 180;
@@ -91,6 +95,35 @@ export function descendantConstellation(
     });
   }
   return positions;
+}
+
+/**
+ * Picks a starting angle for a descendant constellation so that no
+ * satellite ends up directly above the hub (which would make the
+ * satellite's label collide with the tall poster card at center).
+ *
+ *   n = 2  -> 0°   (east / west)
+ *   n = 3  -> 90°  (south, upper-left, upper-right)
+ *   n = 4  -> 45°  (four diagonals)
+ *   n = 5  -> 90°  (south, two sides, two upper diagonals)
+ *   n = 6  -> 0°   (east, ne, nw, west, sw, se)
+ *   n ≥ 7  -> 90°  (south as the anchor, spread evenly)
+ */
+export function safeStartAngle(n: number): number {
+  switch (n) {
+    case 2:
+      return 0;
+    case 3:
+      return 90;
+    case 4:
+      return 45;
+    case 5:
+      return 90;
+    case 6:
+      return 0;
+    default:
+      return 90;
+  }
 }
 
 /**

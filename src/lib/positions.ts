@@ -6,7 +6,8 @@ export interface ScatterPos extends CanvasPos {
 
 /**
  * Lay exhibits in a generous scatter using deterministic positions.
- * Mirrors the original artifact's exhibitScatter.
+ * Preserved from the original artifact for any caller that wants the
+ * jittery museum-floor-plan look. Room.tsx uses exhibitGrid() instead.
  */
 export function exhibitScatter(n: number): ScatterPos[] {
   const positions: ScatterPos[] = [];
@@ -32,8 +33,69 @@ export function exhibitScatter(n: number): ScatterPos[] {
 }
 
 /**
- * Position descendants in a row below the selected exhibit, wrapping above
- * if there's not enough room. Returns array of {left, top} percent strings.
+ * Clean grid positions for a room's exhibits. Handles 1–8 exhibits
+ * with symmetric, centered rows. Rows occupy the lower two-thirds
+ * of the canvas so the title panel at the top has room to breathe.
+ */
+export function exhibitGrid(n: number): CanvasPos[] {
+  const cols = n <= 3 ? n : n === 4 ? 2 : n <= 6 ? 3 : 4;
+  const rows = Math.ceil(n / cols);
+  const xCenter = 50;
+  const xSpread = 28; // half-range around xCenter
+  const yCenter = 66;
+  const ySpread = 16; // half-range around yCenter
+  const positions: CanvasPos[] = [];
+
+  for (let i = 0; i < n; i++) {
+    const r = Math.floor(i / cols);
+    const itemsInThisRow = Math.min(cols, n - r * cols);
+    const c = i % cols;
+    // If this row has fewer items than `cols`, center them by offsetting
+    // the starting column index by half the difference.
+    const startC = (cols - itemsInThisRow) / 2;
+    const effectiveC = c + startC;
+    const xStep = cols > 1 ? (2 * xSpread) / (cols - 1) : 0;
+    const x = cols > 1 ? xCenter - xSpread + effectiveC * xStep : xCenter;
+    const yStep = rows > 1 ? (2 * ySpread) / (rows - 1) : 0;
+    const y = rows > 1 ? yCenter - ySpread + r * yStep : yCenter;
+    positions.push({ left: `${x}%`, top: `${y}%` });
+  }
+  return positions;
+}
+
+/**
+ * Position descendants in a radial constellation around a hub point.
+ * Angles start at -90° (due north) and advance clockwise.
+ *
+ * @param hub    center of the constellation, in canvas percent
+ * @param count  number of satellites
+ * @param radiusX  horizontal radius in viewport-width percent
+ * @param radiusY  vertical radius in viewport-height percent
+ */
+export function descendantConstellation(
+  hub: CanvasPos,
+  count: number,
+  radiusX = 22,
+  radiusY = 24,
+): CanvasPos[] {
+  const cx = parseFloat(hub.left);
+  const cy = parseFloat(hub.top);
+  const positions: CanvasPos[] = [];
+  const startAngle = -90;
+  const step = count > 0 ? 360 / count : 0;
+  for (let i = 0; i < count; i++) {
+    const angleRad = ((startAngle + i * step) * Math.PI) / 180;
+    positions.push({
+      left: `${cx + radiusX * Math.cos(angleRad)}%`,
+      top: `${cy + radiusY * Math.sin(angleRad)}%`,
+    });
+  }
+  return positions;
+}
+
+/**
+ * Legacy row-below fan layout, preserved for completeness. Room.tsx
+ * now uses descendantConstellation instead.
  */
 export function descendantLayout(exPos: CanvasPos, n: number): CanvasPos[] {
   const cx = parseFloat(exPos.left);

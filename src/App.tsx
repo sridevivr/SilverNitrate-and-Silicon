@@ -2,8 +2,11 @@ import { useState } from "react";
 import type { Palette } from "./data/types";
 import { HALL_PALETTE } from "./data/palettes";
 import { SUBWINGS } from "./data/subwings";
+import { ROOMS } from "./data/rooms";
+import { EXHIBITS } from "./data/exhibits";
 import { Hall } from "./components/Hall";
 import { Subwing } from "./components/Subwing";
+import { Room } from "./components/Room";
 import { Decorations } from "./components/Decorations";
 import { Wordmark } from "./components/chrome/Wordmark";
 import { FloorLabel } from "./components/chrome/FloorLabel";
@@ -71,10 +74,14 @@ export default function App() {
     backTo = { type: "hall" };
   } else if (view.type === "room") {
     const sw = SUBWINGS.find((s) => s.id === view.subwing)!;
-    breadcrumb = `${sw.title} / Room`;
-    kicker = "Gallery";
-    title = "Room";
-    whisper = "Room view coming in the next session.";
+    const room = ROOMS.find((r) => r.id === view.id)!;
+    const exCount = Object.values(EXHIBITS).filter(
+      (e) => e.room === room.id,
+    ).length;
+    breadcrumb = `${sw.title} / ${room.title}`;
+    kicker = `Gallery · ${exCount} exhibits`;
+    title = room.title;
+    whisper = room.blurb + " Click any exhibit to see what it produced.";
     backLabel = sw.title;
     backTo = { type: "subwing", id: view.subwing };
   }
@@ -130,22 +137,7 @@ export default function App() {
         })()}
 
         {view.type === "room" && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: palette.dim,
-              fontFamily: '"JetBrains Mono", monospace',
-              fontSize: 10,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-            }}
-          >
-            · Room coming in the next session ·
-          </div>
+          <Room roomId={view.id} palette={palette} />
         )}
       </div>
 

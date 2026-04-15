@@ -12,10 +12,20 @@ interface Props {
 /**
  * A satellite in the constellation bloom: a circular icon container
  * surrounded by kind/name/description text. Thin accent border.
+ *
+ * IMPORTANT: the wrapper is positioned so the **circle's center** sits
+ * at (pos.left, pos.top), not the whole label's box center. That way
+ * the SVG connecting line from the hub terminates at the circle and is
+ * visually clipped at its edge by the circle's opaque background, and
+ * the label text below the circle reads as clearly attached to it.
  */
 export function DescendantSatellite({ descendant, pos, palette, delay }: Props) {
   const [hover, setHover] = useState(false);
   const d = descendant;
+  // The circle is 72px tall at the top of the wrapper, so its center is
+  // 36px below the wrapper's top edge. Shift the wrapper up by 36px so
+  // the circle center lands on pos.top.
+  const CIRCLE_HALF = 36;
   return (
     <div
       onMouseEnter={() => setHover(true)}
@@ -25,7 +35,7 @@ export function DescendantSatellite({ descendant, pos, palette, delay }: Props) 
         left: pos.left,
         top: pos.top,
         width: 130,
-        transform: "translate(-50%, -50%)",
+        transform: `translate(-50%, -${CIRCLE_HALF}px)`,
         animation: `riseIn 600ms cubic-bezier(.2,.8,.2,1) ${delay}ms both`,
         zIndex: hover ? 30 : 6,
         pointerEvents: "auto",

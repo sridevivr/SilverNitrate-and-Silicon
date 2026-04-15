@@ -3,6 +3,8 @@ import type { Palette } from "./data/types";
 import { HALL_PALETTE } from "./data/palettes";
 import { SUBWINGS } from "./data/subwings";
 import { Hall } from "./components/Hall";
+import { Subwing } from "./components/Subwing";
+import { Decorations } from "./components/Decorations";
 import { Wordmark } from "./components/chrome/Wordmark";
 import { FloorLabel } from "./components/chrome/FloorLabel";
 import { BackButton } from "./components/chrome/BackButton";
@@ -18,6 +20,13 @@ function paletteFor(view: View): Palette {
   const subwingId = view.type === "subwing" ? view.id : view.subwing;
   const sw = SUBWINGS.find((s) => s.id === subwingId);
   return sw ? sw.palette : HALL_PALETTE;
+}
+
+type DecorationVariant = React.ComponentProps<typeof Decorations>["variant"];
+function decorationVariant(view: View): DecorationVariant {
+  if (view.type === "hall") return "hall";
+  const subwingId = view.type === "subwing" ? view.id : view.subwing;
+  return (subwingId as DecorationVariant) ?? "hall";
 }
 
 export default function App() {
@@ -60,6 +69,14 @@ export default function App() {
     whisper = sw.subtitle + ". Click any room to enter.";
     backLabel = "Hall";
     backTo = { type: "hall" };
+  } else if (view.type === "room") {
+    const sw = SUBWINGS.find((s) => s.id === view.subwing)!;
+    breadcrumb = `${sw.title} / Room`;
+    kicker = "Gallery";
+    title = "Room";
+    whisper = "Room view coming in the next session.";
+    backLabel = sw.title;
+    backTo = { type: "subwing", id: view.subwing };
   }
 
   return (
@@ -90,6 +107,8 @@ export default function App() {
           transition: "opacity 420ms ease",
         }}
       >
+        <Decorations variant={decorationVariant(view)} palette={palette} />
+
         {view.type === "hall" && (
           <Hall
             palette={palette}
@@ -97,7 +116,20 @@ export default function App() {
           />
         )}
 
-        {view.type === "subwing" && (
+        {view.type === "subwing" && (() => {
+          const sw = SUBWINGS.find((s) => s.id === view.id)!;
+          return (
+            <Subwing
+              subwing={sw}
+              palette={palette}
+              onEnterRoom={(id) =>
+                go({ type: "room", subwing: view.id, id })
+              }
+            />
+          );
+        })()}
+
+        {view.type === "room" && (
           <div
             style={{
               position: "absolute",
@@ -112,7 +144,7 @@ export default function App() {
               textTransform: "uppercase",
             }}
           >
-            · Sub-wing coming in the next session ·
+            · Room coming in the next session ·
           </div>
         )}
       </div>

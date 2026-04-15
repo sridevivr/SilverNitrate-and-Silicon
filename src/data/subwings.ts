@@ -8,8 +8,8 @@ export const SUBWINGS: Subwing[] = [
     numeral: "I",
     title: "Built for the Screen",
     subtitle: "Technology demanded into being by the camera",
-    pos: { left: "24%", top: "32%" },
-    rotate: -1.8,
+    pos: { left: "30%", top: "55%" },
+    rotate: 0,
     palette: {
       bg: "#eef1f2",
       ink: "#1a2128",
@@ -26,8 +26,8 @@ export const SUBWINGS: Subwing[] = [
     numeral: "II",
     title: "Imagined Futures",
     subtitle: "The futures cinema pictured — that then arrived",
-    pos: { left: "74%", top: "30%" },
-    rotate: 1.4,
+    pos: { left: "70%", top: "55%" },
+    rotate: 0,
     palette: {
       bg: "#f3eed8",
       ink: "#2a2414",
@@ -44,8 +44,8 @@ export const SUBWINGS: Subwing[] = [
     numeral: "III",
     title: "Cautionary Tales",
     subtitle: "The fears cinema planted, then we grew",
-    pos: { left: "26%", top: "70%" },
-    rotate: 1.2,
+    pos: { left: "30%", top: "82%" },
+    rotate: 0,
     palette: {
       bg: "#e6e4df",
       ink: "#1f2024",
@@ -62,8 +62,8 @@ export const SUBWINGS: Subwing[] = [
     numeral: "IV",
     title: "Founder Mythology",
     subtitle: "The stories we told ourselves about tech power",
-    pos: { left: "72%", top: "70%" },
-    rotate: -1.5,
+    pos: { left: "70%", top: "82%" },
+    rotate: 0,
     palette: {
       bg: "#efeae2",
       ink: "#231e1a",

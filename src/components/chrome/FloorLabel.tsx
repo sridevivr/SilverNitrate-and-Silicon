@@ -14,7 +14,7 @@ export function FloorLabel({ palette, kicker, title, whisper }: Props) {
       style={{
         position: "absolute",
         left: 32,
-        bottom: 30,
+        top: 92,
         maxWidth: 380,
         zIndex: 5,
         pointerEvents: "none",

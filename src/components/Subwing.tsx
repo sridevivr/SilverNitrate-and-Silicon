@@ -1,30 +1,32 @@
-import type { Palette, Subwing } from "../data/types";
-import { SUBWINGS } from "../data/subwings";
+import type { Palette, Room, Subwing as SubwingType } from "../data/types";
+import { ROOMS } from "../data/rooms";
 import { FloatingNode } from "./FloatingNode";
 import { PosterImg } from "./PosterImg";
 
 interface Props {
+  subwing: SubwingType;
   palette: Palette;
-  onEnterSubwing: (id: string) => void;
+  onEnterRoom: (id: string) => void;
 }
 
 /**
- * The hall — four sub-wing doorways in quadrants on a single canvas.
- * Clicking a doorway hands control back to the parent view state.
+ * Sub-wing page: the rooms that belong to this sub-wing, laid out in a
+ * clean grid per the positions in src/data/rooms.ts.
  */
-export function Hall({ palette, onEnterSubwing }: Props) {
+export function Subwing({ subwing, palette, onEnterRoom }: Props) {
+  const rooms: Room[] = ROOMS.filter((r) => r.subwing === subwing.id);
   return (
     <>
-      {SUBWINGS.map((sw: Subwing, idx: number) => (
+      {rooms.map((r, idx) => (
         <FloatingNode
-          key={sw.id}
-          pos={sw.pos}
-          size={160}
-          rotate={sw.rotate}
-          depth={1.0}
+          key={r.id}
+          pos={r.pos}
+          size={130}
+          rotate={0}
+          depth={0.8}
           visible
           delay={idx * 80}
-          onClick={() => onEnterSubwing(sw.id)}
+          onClick={() => onEnterRoom(r.id)}
         >
           {() => (
             <div>
@@ -32,46 +34,49 @@ export function Hall({ palette, onEnterSubwing }: Props) {
                 style={{
                   aspectRatio: "4 / 5",
                   overflow: "hidden",
-                  boxShadow: "0 14px 30px -14px rgba(0,0,0,.22)",
+                  boxShadow: "0 12px 26px -14px rgba(0,0,0,.25)",
                 }}
               >
-                <PosterImg artKey={sw.heroArt} palette={sw.palette} tint={0.1} />
+                <PosterImg
+                  artKey={r.heroArt ?? "escapees"}
+                  palette={palette}
+                  tint={0.06}
+                />
               </div>
               <div
                 style={{
-                  marginTop: 12,
+                  marginTop: 10,
                   fontFamily: '"JetBrains Mono", monospace',
                   fontSize: 9,
                   letterSpacing: "0.2em",
                   textTransform: "uppercase",
                   color: palette.accent,
-                  marginBottom: 5,
-                }}
-              >
-                Sub-Wing · {sw.numeral}
-              </div>
-              <div
-                style={{
-                  fontFamily: '"Fraunces", Georgia, serif',
-                  fontWeight: 400,
-                  fontSize: 17,
-                  lineHeight: 1.15,
-                  color: palette.ink,
                   marginBottom: 4,
                 }}
               >
-                {sw.title}
+                Gallery
               </div>
               <div
                 style={{
                   fontFamily: '"Fraunces", Georgia, serif',
+                  fontSize: 13,
+                  lineHeight: 1.2,
+                  color: palette.ink,
+                }}
+              >
+                {r.title}
+              </div>
+              <div
+                style={{
+                  marginTop: 4,
+                  fontFamily: '"Fraunces", Georgia, serif',
                   fontStyle: "italic",
-                  fontSize: 11.5,
+                  fontSize: 10.5,
                   lineHeight: 1.35,
                   color: palette.dim,
                 }}
               >
-                {sw.subtitle}
+                {r.blurb}
               </div>
             </div>
           )}

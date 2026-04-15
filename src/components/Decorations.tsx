@@ -20,7 +20,7 @@ interface Props {
  */
 export function Decorations({ variant, palette }: Props) {
   const stroke = palette.dim;
-  const opacity = 0.35;
+  const opacity = 0.5;
   const common = {
     style: { position: "absolute" as const, pointerEvents: "none" as const },
     stroke,
@@ -63,9 +63,32 @@ export function Decorations({ variant, palette }: Props) {
         <svg
           {...common}
           width="70"
-          height="360"
+          height="260"
           viewBox="0 0 70 360"
-          style={{ ...common.style, left: 32, top: "35%" }}
+          style={{ ...common.style, left: 32, top: "40%" }}
+        >
+          {/* capital */}
+          <rect x="8" y="6" width="54" height="10" />
+          <rect x="14" y="16" width="42" height="6" />
+          {/* fluted shaft */}
+          <line x1="20" y1="24" x2="20" y2="320" />
+          <line x1="28" y1="24" x2="28" y2="320" />
+          <line x1="36" y1="24" x2="36" y2="320" />
+          <line x1="44" y1="24" x2="44" y2="320" />
+          <line x1="52" y1="24" x2="52" y2="320" />
+          <rect x="14" y="24" width="42" height="296" />
+          {/* base */}
+          <rect x="10" y="320" width="50" height="8" />
+          <rect x="6" y="328" width="58" height="12" />
+        </svg>
+
+        {/* Right edge, mid-page: matching classical column (flanks the cards) */}
+        <svg
+          {...common}
+          width="70"
+          height="260"
+          viewBox="0 0 70 360"
+          style={{ ...common.style, right: 32, top: "40%" }}
         >
           {/* capital */}
           <rect x="8" y="6" width="54" height="10" />

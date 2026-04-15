@@ -19,7 +19,7 @@ export function Hall({ palette, onEnterSubwing }: Props) {
         <FloatingNode
           key={sw.id}
           pos={sw.pos}
-          size={160}
+          size={148}
           rotate={sw.rotate}
           depth={1.0}
           visible

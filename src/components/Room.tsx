@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import type { CanvasPos, Exhibit, Palette } from "../data/types";
 import { EXHIBITS } from "../data/exhibits";
 import {
@@ -31,19 +31,18 @@ export function Room({ roomId, palette }: Props) {
 
   // Constellation positions computed fresh each render — only used
   // when an exhibit is selected. Starting angle depends on count so
-  // no satellite lands directly above the hub poster.
+  // no satellite lands directly above the hub poster. Radius is a
+  // touch larger than "visually round" to give each label a clean
+  // corridor outside the poster footprint.
   const satellitePositions = selected
     ? descendantConstellation(
         HUB,
         selected.descendants.length,
-        22,
-        22,
+        24,
+        26,
         safeStartAngle(selected.descendants.length),
       )
     : [];
-
-  const cx = parseFloat(HUB.left);
-  const cy = parseFloat(HUB.top);
 
   const toggle = (id: string) => {
     setSelectedId((prev) => (prev === id ? null : id));
@@ -188,60 +187,19 @@ export function Room({ roomId, palette }: Props) {
         );
       })}
 
-      {/* Constellation lines + satellites (only when something's selected) */}
-      {selected && (
-        <Fragment>
-          <svg
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              pointerEvents: "none",
-              zIndex: 3,
-              overflow: "visible",
-            }}
-          >
-            {satellitePositions.map((p, i) => (
-              <line
-                key={i}
-                x1={`${cx}%`}
-                y1={`${cy}%`}
-                x2={p.left}
-                y2={p.top}
-                stroke={palette.accent}
-                strokeWidth="0.9"
-                strokeOpacity="0.55"
-                strokeDasharray="600"
-                strokeDashoffset="600"
-                style={{
-                  animation: `drawIn 900ms cubic-bezier(.2,.8,.2,1) ${
-                    i * 90 + 220
-                  }ms forwards`,
-                }}
-              />
-            ))}
-            <circle
-              cx={`${cx}%`}
-              cy={`${cy}%`}
-              r="3"
-              fill={palette.accent}
-              opacity="0.85"
-              style={{ animation: "fadeIn 400ms ease 120ms both" }}
-            />
-          </svg>
-
-          {selected.descendants.map((d, i) => (
-            <DescendantSatellite
-              key={`${selected.id}-${i}`}
-              descendant={d}
-              pos={satellitePositions[i]}
-              palette={palette}
-              delay={i * 90 + 320}
-            />
-          ))}
-        </Fragment>
-      )}
+      {/* Satellites bloom radially around the selected exhibit.
+          Lines were removed per user feedback — the clean orbital
+          layout is enough to communicate the relationship. */}
+      {selected &&
+        selected.descendants.map((d, i) => (
+          <DescendantSatellite
+            key={`${selected.id}-${i}`}
+            descendant={d}
+            pos={satellitePositions[i]}
+            palette={palette}
+            delay={i * 90 + 220}
+          />
+        ))}
     </>
   );
 }

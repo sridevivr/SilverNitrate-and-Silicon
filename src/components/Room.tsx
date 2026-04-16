@@ -8,14 +8,14 @@ import {
 } from "../lib/positions";
 import { PosterImg } from "./PosterImg";
 import { DescendantSatellite } from "./DescendantSatellite";
+import { DescendantIcon } from "./DescendantIcon";
+import { useIsMobile } from "../lib/useIsMobile";
 
 interface Props {
   roomId: string;
   palette: Palette;
 }
 
-// Hub position when an exhibit is selected. Sitting slightly above
-// dead center gives the bottom satellite more room for its label.
 const HUB: CanvasPos = { left: "50%", top: "54%" };
 
 export function Room({ roomId, palette }: Props) {
@@ -24,16 +24,12 @@ export function Room({ roomId, palette }: Props) {
   );
   const positions = exhibitGrid(exhibits.length);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const mobile = useIsMobile();
 
   const selected = selectedId
     ? exhibits.find((e) => e.id === selectedId) ?? null
     : null;
 
-  // Constellation positions computed fresh each render — only used
-  // when an exhibit is selected. Starting angle depends on count so
-  // no satellite lands directly above the hub poster. Radius is a
-  // touch larger than "visually round" to give each label a clean
-  // corridor outside the poster footprint.
   const satellitePositions = selected
     ? descendantConstellation(
         HUB,
@@ -48,9 +44,242 @@ export function Room({ roomId, palette }: Props) {
     setSelectedId((prev) => (prev === id ? null : id));
   };
 
+  // ───────── MOBILE LAYOUT ─────────
+  if (mobile) {
+    // Mobile selected: full-width detail + vertical descendant list
+    if (selected) {
+      return (
+        <div style={{ padding: "0 20px 32px" }}>
+          <div
+            onClick={() => setSelectedId(null)}
+            style={{
+              display: "flex",
+              gap: 16,
+              alignItems: "start",
+              cursor: "pointer",
+              marginBottom: 20,
+            }}
+          >
+            <div
+              style={{
+                width: 100,
+                flexShrink: 0,
+                aspectRatio: "2 / 3",
+                overflow: "hidden",
+                boxShadow: "0 12px 24px -10px rgba(0,0,0,.3)",
+              }}
+            >
+              <PosterImg artKey={selected.art} palette={palette} />
+            </div>
+            <div>
+              <div
+                style={{
+                  fontFamily: '"JetBrains Mono", monospace',
+                  fontSize: 8.5,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: palette.accent,
+                  marginBottom: 6,
+                }}
+              >
+                {selected.year} · {selected.medium.split(" · ")[0]}
+              </div>
+              <div
+                style={{
+                  fontFamily: '"Fraunces", Georgia, serif',
+                  fontSize: 20,
+                  lineHeight: 1.15,
+                  color: palette.ink,
+                  marginBottom: 8,
+                }}
+              >
+                {selected.title}
+              </div>
+              <div
+                style={{
+                  fontFamily: '"Fraunces", Georgia, serif',
+                  fontStyle: "italic",
+                  fontSize: 12,
+                  lineHeight: 1.45,
+                  color: palette.dim,
+                }}
+              >
+                {selected.demand}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              fontFamily: '"JetBrains Mono", monospace',
+              fontSize: 9,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: palette.accent,
+              marginBottom: 14,
+              paddingTop: 14,
+              borderTop: `1px solid ${palette.faint}`,
+            }}
+          >
+            Descendants
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 18,
+            }}
+          >
+            {selected.descendants.map((d, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  gap: 12,
+                  alignItems: "start",
+                }}
+              >
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    flexShrink: 0,
+                    borderRadius: "50%",
+                    border: `1.4px solid ${palette.accent}`,
+                    background: palette.bg,
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div style={{ width: "78%", height: "78%" }}>
+                    <DescendantIcon
+                      kind={d.kind}
+                      name={d.name}
+                      palette={palette}
+                    />
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontFamily: '"JetBrains Mono", monospace',
+                      fontSize: 7.5,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      color: palette.accent,
+                      marginBottom: 2,
+                    }}
+                  >
+                    {d.kind}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: '"Fraunces", Georgia, serif',
+                      fontSize: 13,
+                      lineHeight: 1.2,
+                      color: palette.ink,
+                      marginBottom: 3,
+                    }}
+                  >
+                    {d.name}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: '"Fraunces", Georgia, serif',
+                      fontStyle: "italic",
+                      fontSize: 11,
+                      lineHeight: 1.35,
+                      color: palette.dim,
+                    }}
+                  >
+                    {d.desc}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setSelectedId(null)}
+            style={{
+              marginTop: 24,
+              background: "transparent",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              fontFamily: '"JetBrains Mono", monospace',
+              fontSize: 10,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: palette.dim,
+            }}
+          >
+            ← Back to exhibits
+          </button>
+        </div>
+      );
+    }
+
+    // Mobile unselected: 2-col grid of exhibit posters
+    return (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16,
+          padding: "0 20px 32px",
+        }}
+      >
+        {exhibits.map((ex) => (
+          <div
+            key={ex.id}
+            onClick={() => toggle(ex.id)}
+            style={{ cursor: "pointer" }}
+          >
+            <div
+              style={{
+                aspectRatio: "2 / 3",
+                overflow: "hidden",
+                boxShadow: "0 8px 18px -8px rgba(0,0,0,.28)",
+              }}
+            >
+              <PosterImg artKey={ex.art} palette={palette} />
+            </div>
+            <div
+              style={{
+                marginTop: 6,
+                fontFamily: '"Fraunces", Georgia, serif',
+                fontSize: 11,
+                lineHeight: 1.2,
+                color: palette.ink,
+              }}
+            >
+              {ex.title}
+            </div>
+            <div
+              style={{
+                marginTop: 3,
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: 8,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: palette.accent,
+              }}
+            >
+              {ex.year}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // ───────── DESKTOP LAYOUT (unchanged) ─────────
   return (
     <>
-      {/* Click-anywhere backdrop to deselect (sits below cards) */}
       {selected && (
         <div
           onClick={() => setSelectedId(null)}
@@ -63,7 +292,6 @@ export function Room({ roomId, palette }: Props) {
         />
       )}
 
-      {/* Exhibit cards: grid in neutral state, one centered in constellation mode */}
       {exhibits.map((ex, idx) => {
         const gridPos = positions[idx];
         const isSel = selectedId === ex.id;
@@ -106,11 +334,6 @@ export function Room({ roomId, palette }: Props) {
               }}
             >
               <PosterImg artKey={ex.art} palette={palette} />
-
-              {/* When selected, render year + title as a caption strip
-                  overlaid on the bottom of the poster so the card
-                  footprint stays equal to the poster itself — no extra
-                  text below to push into the constellation. */}
               {isSel && (
                 <div
                   style={{
@@ -151,9 +374,6 @@ export function Room({ roomId, palette }: Props) {
                 </div>
               )}
             </div>
-
-            {/* Grid-state label below the poster. Hidden when selected
-                so the constellation layout has clean vertical space. */}
             {!isSel && (
               <>
                 <div
@@ -187,9 +407,6 @@ export function Room({ roomId, palette }: Props) {
         );
       })}
 
-      {/* Satellites bloom radially around the selected exhibit.
-          Lines were removed per user feedback — the clean orbital
-          layout is enough to communicate the relationship. */}
       {selected &&
         selected.descendants.map((d, i) => (
           <DescendantSatellite

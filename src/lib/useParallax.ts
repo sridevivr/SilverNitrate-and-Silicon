@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 /**
  * Tracks mouse position normalized to [-1, 1] on both axes.
  * RAF-throttled so setState doesn't fire on every mousemove.
+ * Returns {x:0, y:0} on touch/narrow screens where parallax
+ * would be disorienting.
  */
 export function useParallax() {
   const [p, setP] = useState({ x: 0, y: 0 });
   useEffect(() => {
+    if (window.innerWidth < 768) return;
     let raf: number | null = null;
     const handler = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;

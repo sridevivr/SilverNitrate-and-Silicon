@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Palette } from "../../data/types";
+import { useIsMobile } from "../../lib/useIsMobile";
 
 interface Props {
   palette: Palette;
@@ -9,25 +10,27 @@ interface Props {
 }
 
 export function FloorLabel({ palette, kicker, title, whisper }: Props) {
+  const mobile = useIsMobile();
   return (
     <div
       style={{
-        position: "absolute",
-        left: 32,
-        top: 92,
-        maxWidth: 380,
+        position: mobile ? "relative" : "absolute",
+        left: mobile ? 0 : 32,
+        top: mobile ? 0 : 92,
+        maxWidth: mobile ? "100%" : 380,
         zIndex: 5,
         pointerEvents: "none",
+        padding: mobile ? "20px 20px 12px" : 0,
       }}
     >
       <div
         style={{
           fontFamily: '"JetBrains Mono", monospace',
-          fontSize: 10,
+          fontSize: mobile ? 9 : 10,
           letterSpacing: "0.22em",
           textTransform: "uppercase",
           color: palette.accent,
-          marginBottom: 10,
+          marginBottom: mobile ? 6 : 10,
         }}
       >
         {kicker}
@@ -36,7 +39,7 @@ export function FloorLabel({ palette, kicker, title, whisper }: Props) {
         style={{
           fontFamily: '"Fraunces", Georgia, serif',
           fontWeight: 300,
-          fontSize: 40,
+          fontSize: mobile ? 28 : 40,
           lineHeight: 0.98,
           color: palette.ink,
           letterSpacing: "-0.015em",
@@ -47,10 +50,10 @@ export function FloorLabel({ palette, kicker, title, whisper }: Props) {
       {whisper && (
         <div
           style={{
-            marginTop: 14,
+            marginTop: mobile ? 8 : 14,
             fontFamily: '"Fraunces", Georgia, serif',
             fontStyle: "italic",
-            fontSize: 13,
+            fontSize: mobile ? 12 : 13,
             lineHeight: 1.5,
             color: palette.dim,
           }}

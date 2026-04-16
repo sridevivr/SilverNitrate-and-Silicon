@@ -12,6 +12,7 @@ import { Wordmark } from "./components/chrome/Wordmark";
 import { FloorLabel } from "./components/chrome/FloorLabel";
 import { BackButton } from "./components/chrome/BackButton";
 import { Recorder } from "./components/ambient/Recorder";
+import { useIsMobile } from "./lib/useIsMobile";
 
 type View =
   | { type: "hall" }
@@ -35,6 +36,7 @@ function decorationVariant(view: View): DecorationVariant {
 export default function App() {
   const [view, setView] = useState<View>({ type: "hall" });
   const [fading, setFading] = useState(false);
+  const mobile = useIsMobile();
 
   const go = (next: View) => {
     setFading(true);
@@ -78,7 +80,7 @@ export default function App() {
     const exCount = Object.values(EXHIBITS).filter(
       (e) => e.room === room.id,
     ).length;
-    breadcrumb = `${sw.title} / ${room.title}`;
+    breadcrumb = mobile ? room.title : `${sw.title} / ${room.title}`;
     kicker = `Gallery · ${exCount} exhibits`;
     title = room.title;
     whisper = room.blurb + " Click any exhibit to see what it produced.";
@@ -90,31 +92,42 @@ export default function App() {
     <div
       style={{
         minHeight: "100vh",
-        height: "100vh",
+        height: mobile ? "auto" : "100vh",
         width: "100vw",
         background: palette.bg,
         color: palette.ink,
         position: "relative",
-        overflow: "hidden",
+        overflow: mobile ? "auto" : "hidden",
         transition: "background 1100ms ease, color 1100ms ease",
         fontFamily: '"Fraunces", Georgia, serif',
       }}
     >
       <Wordmark palette={palette} breadcrumb={breadcrumb} />
-      <FloorLabel palette={palette} kicker={kicker} title={title} whisper={whisper} />
+      <FloorLabel
+        palette={palette}
+        kicker={kicker}
+        title={title}
+        whisper={whisper}
+      />
       {backTo && backLabel && (
-        <BackButton palette={palette} onClick={() => go(backTo!)} label={backLabel} />
+        <BackButton
+          palette={palette}
+          onClick={() => go(backTo!)}
+          label={backLabel}
+        />
       )}
 
       <div
         style={{
-          position: "absolute",
-          inset: 0,
+          position: mobile ? "relative" : "absolute",
+          inset: mobile ? undefined : 0,
           opacity: fading ? 0 : 1,
           transition: "opacity 420ms ease",
         }}
       >
-        <Decorations variant={decorationVariant(view)} palette={palette} />
+        {!mobile && (
+          <Decorations variant={decorationVariant(view)} palette={palette} />
+        )}
 
         {view.type === "hall" && (
           <Hall
@@ -123,18 +136,19 @@ export default function App() {
           />
         )}
 
-        {view.type === "subwing" && (() => {
-          const sw = SUBWINGS.find((s) => s.id === view.id)!;
-          return (
-            <Subwing
-              subwing={sw}
-              palette={palette}
-              onEnterRoom={(id) =>
-                go({ type: "room", subwing: view.id, id })
-              }
-            />
-          );
-        })()}
+        {view.type === "subwing" &&
+          (() => {
+            const sw = SUBWINGS.find((s) => s.id === view.id)!;
+            return (
+              <Subwing
+                subwing={sw}
+                palette={palette}
+                onEnterRoom={(id) =>
+                  go({ type: "room", subwing: view.id, id })
+                }
+              />
+            );
+          })()}
 
         {view.type === "room" && (
           <Room roomId={view.id} palette={palette} />

@@ -78,12 +78,15 @@ silver-nitrate-and-silicon/
 │   │   ├── positions.ts      # exhibitScatter, descendantLayout helpers
 │   │   └── posters.ts        # posterSrc() — maps art key → /posters/*.jpg
 │   └── components/
-│       ├── Hall.tsx          # 4 sub-wing doorways in quadrants
-│       ├── Subwing.tsx       # rooms laid out in per-wing grids
-│       ├── FloatingNode.tsx  # parallax-drifted, hover-lift card primitive
-│       ├── PosterImg.tsx     # poster display with AbstractArt fallback
-│       ├── AbstractArt.tsx   # SVG fallbacks for software exhibits
-│       ├── Decorations.tsx   # pen-drawing SVG layer (5 variants)
+│       ├── Hall.tsx              # 4 sub-wing doorways in quadrants
+│       ├── Subwing.tsx           # rooms laid out in per-wing grids
+│       ├── Room.tsx              # exhibit grid + descendant constellation bloom
+│       ├── FloatingNode.tsx      # parallax-drifted, hover-lift card primitive
+│       ├── PosterImg.tsx         # poster display with AbstractArt fallback
+│       ├── AbstractArt.tsx       # SVG fallbacks for software exhibits
+│       ├── DescendantSatellite.tsx  # radial satellite (circle + kind/name/desc)
+│       ├── DescendantIcon.tsx    # per-kind SVG icons for satellite circles
+│       ├── Decorations.tsx       # pen-drawing SVG layer (5 variants)
 │       ├── ambient/
 │       │   └── Recorder.tsx  # Tone.js chord pad toggle (reel-to-reel icon)
 │       └── chrome/
@@ -142,6 +145,15 @@ Scripts:
   - **Founder Mythology**: laurel wreath, trophy cup, framed portrait
 - Back button top-right returns to the hall.
 
+### Room view + descendant constellation
+
+- Click a room to enter the **gallery**: its exhibits lay out in a clean grid (`exhibitGrid` in `src/lib/positions.ts`). Grid adapts to exhibit count: 1×3 for 3 exhibits, 2×2 for 4, 3+2 for 5, 4+3 for 7.
+- Click an exhibit poster → the poster **translates to the center** of the canvas (hub at 50%, 54%), scales up from 104 px to 132 px, and other exhibits fade to 0 opacity.
+- **Descendants bloom radially** around the hub using `descendantConstellation()`. Satellites are placed at equal angular intervals starting from a per-count `safeStartAngle()` that guarantees no satellite lands directly above the poster (which would obscure the label behind the tall card).
+- Each satellite is a **72 px accent-bordered circle** containing a per-kind SVG icon (`DescendantIcon.tsx`: person / company / product / device / software / concept / meme). Below the circle: kind kicker (mono uppercase), name (serif), and description (italic small).
+- Selected poster shows year + title as a **caption overlay** at the bottom of the poster image with a dark gradient — so the card's footprint stays equal to the poster and doesn't push into satellite territory.
+- Click background or the same exhibit to collapse back to the grid.
+
 ### Ambient audio
 
 - Reel-to-reel icon bottom-right toggles a slow Tone.js chord pad:
@@ -160,9 +172,7 @@ Scripts:
 
 ## What's deferred
 
-- **Room view** (`src/components/Room.tsx`) — exhibits scattered inside a room with inline detail bloom on click. Data and `exhibitScatter` helper are already in place.
-- **Exhibit detail bloom** (`src/components/DescendantSatellite.tsx`) — constellation-style descendants around the selected exhibit with thin accent-colored connecting lines drawn via SVG. `descendantLayout` helper is ready in `src/lib/positions.ts`.
-- **Real descendant imagery** — currently descendants will render as stylized SVG icons per kind (person/company/product/device/software/concept/meme). The goal is real images: Wikipedia/Wikimedia for public figures, curated SVGs/sourced imagery for products.
+- **Real descendant imagery** — currently descendants render as stylized SVG icons per kind (person/company/product/device/software/concept/meme). The goal is real images: Wikipedia/Wikimedia for public figures, curated SVGs/sourced imagery for products.
 - **Mobile layout** — currently desktop-only (absolute percentages don't translate). Will need a separate stacked vertical variant with tap-to-expand.
 - **Search / directory view** — jump-to-any-exhibit index if the museum grows.
 - **Second wing** — the whole structure is designed to scale. Candidate next wings: *Cinema → Fashion*, *Music → Technology*, *Cinema → Architecture*.
@@ -203,6 +213,38 @@ User feedback: hall layout felt haphazard, text was in the wrong place, page fel
 - **App.tsx:** decorations rendered in every view; sub-wing route connects to the new component; room view now shows a "coming in the next session" placeholder.
 
 Bundle: 413 KB JS / 116 KB gzipped (+12 KB vs session 1 for the two new components).
+
+### Session 3 — Card spacing, darker decorations, right column
+
+Commits: `90e9acc`, `1f0cf34` on `claude/port-to-vite-3E0cn`.
+
+User feedback: bottom-row sub-wing cards were clipped below the viewport on a typical laptop screen. Decorations were too faint. Wanted a second column on the right edge.
+
+- **Hall spacing:** sub-wing grid widened from `(55%, 82%)` → `(47%, 80%)`, giving 33% vertical gap instead of 27%. Cards resized `160` → `120` so the poster + label fits comfortably inside ~760 px browser viewports.
+- **Subwing spacing:** Built for the Screen's 2×2 rooms grid widened the same way: `(52%, 88%)` → `(47%, 80%)`. `Subwing.tsx` now uses 120-size cards for 4-room layouts and keeps 130 for sparser layouts.
+- **Decorations darker:** default opacity bumped from `0.35` → `0.5` across all five variants.
+- **Second column:** a matching classical column added on the hall's right edge, flanking the card grid alongside the existing left column. Both columns sized at 260 px height to fit between the top-right window and bottom-right plant without overlapping.
+
+### Session 4 — Room view with radial descendant constellation
+
+Commits: `d7f61ec`, `b01a0b7`, `c268c95`, `cebb689` on `claude/port-to-vite-3E0cn`.
+
+Built the end-to-end click-through experience: Hall → sub-wing → room → exhibit → descendants.
+
+- **New components:**
+  - `src/components/Room.tsx` — the room gallery. Renders exhibits in a clean grid (`exhibitGrid`); click selects one, translates it to center hub, fades out siblings, and blooms descendants radially.
+  - `src/components/DescendantSatellite.tsx` — 72 px accent-bordered circle with kind-specific icon, kind/name/desc label below.
+  - `src/components/DescendantIcon.tsx` — per-kind SVG icons (person, company, product, device, software, concept, meme), ported from the original Cowork artifact with a 140×140 viewBox for circular containers.
+- **New position helpers** (`src/lib/positions.ts`):
+  - `exhibitGrid(n)` — clean symmetric grid with centered last-row logic for 3/4/5/7-exhibit rooms.
+  - `descendantConstellation(hub, count, rx, ry, startAngle)` — radial layout at equal angular intervals.
+  - `safeStartAngle(n)` — per-count starting angle that prevents any satellite from landing directly above the hub (which would hide its label behind the tall poster card).
+- **Satellite anchoring:** wrapper uses `translate(-50%, -36px)` so the circle's visual center sits at the computed position. Labels hang directly below the circle.
+- **Lines removed:** connecting SVG lines between hub and satellites were dropped per user feedback — the clean orbital arrangement is enough.
+- **Selected poster overlay:** year + title rendered as a gradient-backed caption strip overlaid on the poster bottom, keeping the card's footprint equal to the poster image.
+- **App.tsx:** room view wired into the view state machine with full breadcrumb, exhibit-count kicker, room title, and blurb whisper.
+
+Bundle: 451 KB JS / 129 KB gzipped (+38 KB for Room + 3 new components).
 
 ---
 

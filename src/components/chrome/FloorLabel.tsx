@@ -56,6 +56,8 @@ export function FloorLabel({ palette, kicker, title, whisper }: Props) {
             fontSize: mobile ? 12 : 13,
             lineHeight: 1.5,
             color: palette.dim,
+            maxHeight: mobile ? "none" : 80,
+            overflow: "hidden",
           }}
         >
           {whisper}

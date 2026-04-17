@@ -144,9 +144,11 @@ export function Subwing({ subwing, palette, onEnterRoom }: Props) {
                   fontSize: 10.5,
                   lineHeight: 1.35,
                   color: palette.dim,
+                  maxHeight: 42,
+                  overflow: "hidden",
                 }}
               >
-                {r.blurb}
+                {r.blurb.split(". ")[0] + "."}
               </div>
             </div>
           )}

@@ -17,6 +17,7 @@ export interface Subwing {
   numeral: string;
   title: string;
   subtitle: string;
+  description: string;
   pos: CanvasPos;
   rotate: number;
   palette: Palette;

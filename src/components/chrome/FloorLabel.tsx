@@ -17,7 +17,7 @@ export function FloorLabel({ palette, kicker, title, whisper }: Props) {
         position: mobile ? "relative" : "absolute",
         left: mobile ? 0 : 32,
         top: mobile ? 0 : 92,
-        maxWidth: mobile ? "100%" : 380,
+        maxWidth: mobile ? "100%" : 440,
         zIndex: 5,
         pointerEvents: "none",
         padding: mobile ? "20px 20px 12px" : 0,

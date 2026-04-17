@@ -65,13 +65,13 @@ export default function App() {
       </>
     );
     whisper =
-      "A wing devoted to cinema, as told through its technology. Four doorways open from this hall — click to enter.";
+      "Silver Nitrate & Silicon is a museum exploring how cinema and technology have shaped each other. Films demanded new tools into existence, imagined products decades before they shipped, warned us about the ones we should have feared, and turned founders into mythological characters. Forty-six exhibits across four wings. Click any doorway to enter.";
   } else if (view.type === "subwing") {
     const sw = SUBWINGS.find((s) => s.id === view.id)!;
     breadcrumb = sw.title;
     kicker = `Sub-Wing ${sw.numeral}`;
     title = sw.title;
-    whisper = sw.subtitle + ". Click any room to enter.";
+    whisper = sw.description;
     backLabel = "Hall";
     backTo = { type: "hall" };
   } else if (view.type === "room") {

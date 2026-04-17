@@ -8,6 +8,8 @@ export const SUBWINGS: Subwing[] = [
     numeral: "I",
     title: "Built for the Screen",
     subtitle: "Technology demanded into being by the camera",
+    description:
+      "Films have always needed technology that does not yet exist. To get the shot, filmmakers funded research labs, commissioned new cameras, and built rendering infrastructure that later powered entire industries. This wing traces the tools that were born on set and grew far beyond it.",
     pos: { left: "30%", top: "47%" },
     rotate: 0,
     palette: {
@@ -25,7 +27,9 @@ export const SUBWINGS: Subwing[] = [
     id: "imaginedFutures",
     numeral: "II",
     title: "Imagined Futures",
-    subtitle: "The futures cinema pictured — that then arrived",
+    subtitle: "The futures cinema pictured, that then arrived",
+    description:
+      "Before the engineers built it, the screenwriters imagined it. Flip phones, tablets, voice assistants, gesture interfaces, self-driving taxis: each appeared on screen years or decades before it shipped as a product. This wing follows the line from fiction to consumer reality.",
     pos: { left: "70%", top: "47%" },
     rotate: 0,
     palette: {
@@ -44,6 +48,8 @@ export const SUBWINGS: Subwing[] = [
     numeral: "III",
     title: "Cautionary Tales",
     subtitle: "The fears cinema planted, then we grew",
+    description:
+      "Cinema has been our early warning system for technology's risks. From Skynet to social credit scores, from deepfakes to grief bots, the anxieties that filmmakers embedded in popular culture shaped how we regulated, debated, and sometimes failed to prevent the real thing. This wing collects the prophecies.",
     pos: { left: "30%", top: "80%" },
     rotate: 0,
     palette: {
@@ -62,6 +68,8 @@ export const SUBWINGS: Subwing[] = [
     numeral: "IV",
     title: "Founder Mythology",
     subtitle: "The stories we told ourselves about tech power",
+    description:
+      "Hollywood observed Silicon Valley and turned its founders into archetypes. The hoodie-clad genius, the relentless visionary, the charismatic fraud: these characters were cast on screen and then echoed in real boardrooms. This wing examines the mythology of tech power.",
     pos: { left: "70%", top: "80%" },
     rotate: 0,
     palette: {

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 export function useParallax() {
   const [p, setP] = useState({ x: 0, y: 0 });
   useEffect(() => {
-    if (window.innerWidth < 768) return;
+    if (window.innerWidth < 1024) return;
     let raf: number | null = null;
     const handler = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;

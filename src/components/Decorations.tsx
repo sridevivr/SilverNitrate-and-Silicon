@@ -65,7 +65,7 @@ export function Decorations({ variant, palette }: Props) {
           width="70"
           height="260"
           viewBox="0 0 70 360"
-          style={{ ...common.style, left: 32, top: "40%" }}
+          style={{ ...common.style, left: 32, bottom: 150 }}
         >
           {/* capital */}
           <rect x="8" y="6" width="54" height="10" />
@@ -209,7 +209,7 @@ export function Decorations({ variant, palette }: Props) {
           width="120"
           height="260"
           viewBox="0 0 120 260"
-          style={{ ...common.style, left: 28, top: "28%" }}
+          style={{ ...common.style, left: 28, bottom: 210 }}
         >
           {/* camera head */}
           <rect x="30" y="18" width="60" height="32" />
@@ -354,7 +354,7 @@ export function Decorations({ variant, palette }: Props) {
           width="160"
           height="300"
           viewBox="0 0 160 300"
-          style={{ ...common.style, left: 32, top: "26%" }}
+          style={{ ...common.style, left: 32, bottom: 40 }}
         >
           {/* oval frame */}
           <ellipse cx="80" cy="140" rx="64" ry="110" />
